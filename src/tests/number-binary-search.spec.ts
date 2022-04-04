@@ -1,12 +1,22 @@
-class NumberBinarySearch {
+type NumberBinarySearchParams = {
+    targetValue: number;
+    startIndexPosition?: number;
+    endIndexPosition?: number;
+};
+
+interface NumberBinarySearch {
+    findMeIndex(params: NumberBinarySearchParams): number | number[];
+}
+
+class NumberBinarySearch implements NumberBinarySearch {
     constructor(private readonly data: Array<number>) {}
     private arraySize = this.data.length;
 
-    findMeIndex = (
+    findMeIndex = ({
         targetValue,
         startIndexPosition = 0,
-        endIndexPosition = this.arraySize
-    ): number | number[] => {
+        endIndexPosition = this.arraySize,
+    }: NumberBinarySearchParams): number | number[] => {
         const middle = Math.floor((startIndexPosition + endIndexPosition) / 2);
 
         if (this.data[middle] === targetValue) {
@@ -14,11 +24,19 @@ class NumberBinarySearch {
         }
 
         if (this.data[middle] > targetValue) {
-            return this.findMeIndex(targetValue, startIndexPosition, middle - 1);
+            return this.findMeIndex({
+                targetValue,
+                startIndexPosition,
+                endIndexPosition: middle - 1,
+            });
         }
 
         if (this.data[middle] < targetValue) {
-            return this.findMeIndex(targetValue, middle + 1, endIndexPosition);
+            return this.findMeIndex({
+                targetValue,
+                startIndexPosition: middle + 1,
+                endIndexPosition,
+            });
         }
 
         return -1;
@@ -33,7 +51,7 @@ describe('Binary Search util', () => {
 
         const sut = new NumberBinarySearch(numberArray);
 
-        expect(sut.findMeIndex(targetValue)).toBe(expectedIndex);
+        expect(sut.findMeIndex({ targetValue })).toBe(expectedIndex);
     });
 
     it('Should not find number in array', () => {
@@ -43,6 +61,6 @@ describe('Binary Search util', () => {
 
         const sut = new NumberBinarySearch(numberArray);
 
-        expect(sut.findMeIndex(targetValue)).toBe(expectedIndex);
+        expect(sut.findMeIndex({ targetValue })).toBe(expectedIndex);
     });
 });
